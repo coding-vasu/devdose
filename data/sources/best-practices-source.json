@@ -1,0 +1,23 @@
+[
+  {
+    "type": "github",
+    "name": "30-seconds/30-seconds-of-code",
+    "url": "https://github.com/30-seconds/30-seconds-of-code",
+    "tags": ["javascript", "snippets", "quick-tips"],
+    "priority": 10
+  },
+  {
+    "type": "github",
+    "name": "airbnb/javascript",
+    "url": "https://github.com/airbnb/javascript",
+    "tags": ["javascript", "style-guide", "best-practices"],
+    "priority": 10
+  },
+  {
+    "type": "github",
+    "name": "ryanmcdermott/clean-code-javascript",
+    "url": "https://github.com/ryanmcdermott/clean-code-javascript",
+    "tags": ["javascript", "clean-code", "best-practices"],
+    "priority": 10
+  }
+]

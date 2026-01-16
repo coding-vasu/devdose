@@ -1,0 +1,16 @@
+{
+  "name": "@devdose/shared",
+  "version": "1.0.0",
+  "description": "Shared types and utilities for DevDose",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": ["devdose", "shared", "types"],
+  "author": "Vasu Vallabh",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "type": "docs",
+    "name": "React Documentation",
+    "url": "https://react.dev",
+    "tags": ["react", "hooks", "components"],
+    "priority": 10
+  },
+  {
+    "type": "docs",
+    "name": "TypeScript Handbook",
+    "url": "https://www.typescriptlang.org/docs",
+    "tags": ["typescript", "types"],
+    "priority": 10
+  },
+  {
+    "type": "docs",
+    "name": "MDN Web Docs",
+    "url": "https://developer.mozilla.org/en-US/docs/Web",
+    "tags": ["javascript", "css", "html", "web-apis"],
+    "priority": 10
+  },
+  {
+    "type": "github",
+    "name": "facebook/react",
+    "url": "https://github.com/facebook/react",
+    "tags": ["react", "hooks"],
+    "priority": 10
+  },
+  {
+    "type": "github",
+    "name": "microsoft/TypeScript",
+    "url": "https://github.com/microsoft/TypeScript",
+    "tags": ["typescript"],
+    "priority": 10
+  },
+  {
+    "type": "blog",
+    "name": "web.dev",
+    "url": "https://web.dev",
+    "tags": ["performance", "web", "best-practices"],
+    "priority": 9
+  }
+]

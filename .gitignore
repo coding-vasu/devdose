@@ -50,9 +50,3 @@ processing-results.json
 quality-results.json
 enrichment-results.json
 publishing-results.json
-
-# Old structure (to be removed after verification)
-src/
-devdose-frontend/
-pipeline/
-test-*.ts

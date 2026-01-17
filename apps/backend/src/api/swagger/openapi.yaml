@@ -1,0 +1,491 @@
+openapi: 3.0.0
+info:
+  title: DevDose API
+  version: 1.0.0
+  description: |
+    REST API for DevDose - A micro-learning platform for developers.
+    
+    Provides access to curated code snippets with explanations, organized by language, difficulty, and tags.
+  contact:
+    name: DevDose Team
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.devdose.app
+    description: Production server
+
+tags:
+  - name: Posts
+    description: Code snippet posts
+  - name: Tags
+    description: Tag management
+  - name: Statistics
+    description: Platform statistics
+  - name: Health
+    description: Health check
+
+paths:
+  /api/posts:
+    get:
+      tags:
+        - Posts
+      summary: List posts
+      description: Get a paginated list of code snippet posts with optional filtering
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-indexed)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: language
+          in: query
+          description: Filter by programming language
+          schema:
+            type: string
+            example: javascript
+        - name: difficulty
+          in: query
+          description: Filter by difficulty level
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced]
+        - name: tags
+          in: query
+          description: Filter by tags (comma-separated)
+          schema:
+            type: string
+            example: react,hooks
+        - name: sort
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [created_at, quality_score, view_count]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostSummary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: Get post by ID
+      description: Retrieve a single post with full details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Post UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/posts/random:
+    get:
+      tags:
+        - Posts
+      summary: Get random posts
+      description: Retrieve random post(s) with optional filtering
+      parameters:
+        - name: count
+          in: query
+          description: Number of random posts to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 1
+        - name: language
+          in: query
+          description: Filter by programming language
+          schema:
+            type: string
+        - name: difficulty
+          in: query
+          description: Filter by difficulty level
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/posts/search:
+    get:
+      tags:
+        - Posts
+      summary: Search posts
+      description: Search posts by keyword in title, explanation, or tags
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+            minLength: 2
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostSummary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/tags:
+    get:
+      tags:
+        - Tags
+      summary: List all tags
+      description: Get all unique tags with post counts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tag:
+                      type: string
+                      example: react
+                    count:
+                      type: integer
+                      example: 45
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/languages:
+    get:
+      tags:
+        - Tags
+      summary: List all languages
+      description: Get all programming languages with post counts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    language:
+                      type: string
+                      example: javascript
+                    count:
+                      type: integer
+                      example: 120
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/difficulties:
+    get:
+      tags:
+        - Tags
+      summary: List difficulty levels
+      description: Get all difficulty levels with post counts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    difficulty:
+                      type: string
+                      enum: [beginner, intermediate, advanced]
+                    count:
+                      type: integer
+                      example: 75
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/stats:
+    get:
+      tags:
+        - Statistics
+      summary: Get platform statistics
+      description: Retrieve overall platform statistics
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statistics'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check API health status
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime:
+                    type: number
+                    description: Server uptime in seconds
+
+components:
+  schemas:
+    PostSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "Array Destructuring in JavaScript"
+        code:
+          type: string
+          example: "const [first, second] = array;"
+        language:
+          type: string
+          example: "javascript"
+        explanation:
+          type: string
+          example: "Array destructuring allows you to unpack values from arrays..."
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["javascript", "es6", "arrays"]
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        quality_score:
+          type: integer
+          minimum: 1
+          maximum: 100
+        reading_time_seconds:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    PostDetail:
+      allOf:
+        - $ref: '#/components/schemas/PostSummary'
+        - type: object
+          properties:
+            prerequisites:
+              type: array
+              items:
+                type: string
+              example: ["Basic JavaScript"]
+            source_url:
+              type: string
+              format: uri
+              nullable: true
+            source_name:
+              type: string
+              nullable: true
+            source_type:
+              type: string
+              nullable: true
+            view_count:
+              type: integer
+            bookmark_count:
+              type: integer
+            updated_at:
+              type: string
+              format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 150
+        total_pages:
+          type: integer
+          example: 8
+
+    Statistics:
+      type: object
+      properties:
+        total_posts:
+          type: integer
+          example: 1500
+        total_views:
+          type: integer
+          example: 125000
+        total_bookmarks:
+          type: integer
+          example: 3500
+        languages:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            javascript: 450
+            typescript: 380
+            python: 320
+        difficulties:
+          type: object
+          properties:
+            beginner:
+              type: integer
+            intermediate:
+              type: integer
+            advanced:
+              type: integer
+        top_tags:
+          type: array
+          items:
+            type: object
+            properties:
+              tag:
+                type: string
+              count:
+                type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Bad Request"
+            message: "Invalid query parameters"
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Not Found"
+            message: "Post not found"
+    
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal Server Error"
+            message: "An unexpected error occurred"

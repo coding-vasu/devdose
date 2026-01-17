@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "start": "node dist/api/server.js",
     "build:api": "tsc --project tsconfig.api.json",
     "dev": "tsx src/cli.ts",
     "pipeline": "ts-node src/pipeline/index.ts",
